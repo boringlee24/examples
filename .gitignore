@@ -1,3 +1,4 @@
+imagenet/imagenet
 dcgan/data
 data
 *.pyc
