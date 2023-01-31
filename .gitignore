@@ -20,5 +20,5 @@ docs/venv
 *~
 
 # development
-.vscode
+#.vscode
 **/.DS_Store
