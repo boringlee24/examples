@@ -1,3 +1,6 @@
+# File to edit: imagenet/main.py
+Refer to https://github.com/boringlee24/containerized_distributed_training for the options passed into the python script (imagenet)
+
 # PyTorch Examples
 
 ![Run Examples](https://github.com/pytorch/examples/workflows/Run%20Examples/badge.svg)
