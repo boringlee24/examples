@@ -12,7 +12,14 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "cwd": "${fileDirname}",
-            "args": ["-a", "resnet50", "-b", "64", "--multiprocessing-distributed", "--world-size", "1", "--rank", "0", "imagenet"]
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0,1,2,3"
+            },        
+            "args": ["-a", "resnet50", "-b", "64", "--multiprocessing-distributed", 
+                    "--world-size", "1", "--rank", "0", "imagenet"]
+                    // "--benchmarking", 
+                    // "--gpu-type", "v100", "--num-gpu", "4", "--iter-limit", "200",
+                    // "imagenet"]
         }
     ]
 }

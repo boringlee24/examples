@@ -20,6 +20,12 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import Subset
+import sys
+sys.path.append('/work/li.baol/GIT/power_monitor')
+from carbontracker.tracker import CarbonTrackerManual
+from time import perf_counter
+from pathlib import Path
+import json
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -77,12 +83,29 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
                          'fastest way to use PyTorch for either single node or '
                          'multi node data parallel training')
 parser.add_argument('--dummy', action='store_true', help="use fake data to benchmark")
+parser.add_argument('--iter-limit', default=2000, type=int,
+                    help='Number of iterations as a limit for benchmarking purpose')
+parser.add_argument('--benchmarking', action='store_true',
+                    help='Benchmarking mode, terminates after certain number if iterations')
+parser.add_argument('--gpu-type', default='unspecified_gpu', type=str,
+                    help='GPU type used for benchmarking')
+parser.add_argument('--num-gpu', default=4, type=int,
+                    help='Number of GPUs used for benchmarking')
 
 best_acc1 = 0
-
+skip_iters = 10
+iteration_ms = []
 
 def main():
     args = parser.parse_args()
+
+    if args.benchmarking:
+        save_dir = f'benchmark_logs/{args.num_gpu}x{args.gpu_type}'
+        Path(save_dir).mkdir(parents=True, exist_ok=True)
+        # actual_iters = 10 + args.iter_limit # discard first 10 iterations due to warm up
+
+        # GPU_IDS = ','.join(map(str, list(range(args.num_gpu))))
+        # os.environ["CUDA_VISIBLE_DEVICES"] = GPU_IDS
 
     if args.seed is not None:
         random.seed(args.seed)
@@ -312,10 +335,16 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
     # switch to train mode
     model.train()
 
-    end = time.time()
+    if args.benchmarking:
+        tracker = CarbonTrackerManual(epochs=1, monitor_epochs=1, update_interval=1,
+                components='all', epochs_before_pred=1, verbose=2)
+        tracker.tracker.pue_manual = 1
+        tracker.intensity_updater.ci_manual = 300
+
+    end = perf_counter()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
-        data_time.update(time.time() - end)
+        data_time.update(perf_counter() - end)
 
         # move data to the same device as model
         images = images.to(device, non_blocking=True)
@@ -337,12 +366,21 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
         optimizer.step()
 
         # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+        iter_time = perf_counter() - end
+        iteration_ms.append(iter_time*1000)
+        batch_time.update(iter_time)
 
         if i % args.print_freq == 0:
             progress.display(i + 1)
-
+        if args.benchmarking and len(iteration_ms) == skip_iters:
+            tracker.epoch_start()
+        if args.benchmarking and len(iteration_ms) > skip_iters+args.iter_limit:
+            save_dir = f'benchmark_logs/{args.num_gpu}x{args.gpu_type}'
+            tracker.epoch_end(f'{save_dir}/carbon_{args.arch}')
+            with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
+                json.dump(iteration_ms[skip_iters:], f, indent=4)
+            sys.exit()
+        end = perf_counter()        
 
 def validate(val_loader, model, criterion, args):
 
