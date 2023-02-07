@@ -335,12 +335,6 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
     # switch to train mode
     model.train()
 
-    if args.benchmarking and mp.current_process()._identity[0] == 1:
-        tracker = CarbonTrackerManual(epochs=1, monitor_epochs=1, update_interval=1,
-                components='all', epochs_before_pred=1, verbose=2)
-        tracker.tracker.pue_manual = 1
-        tracker.intensity_updater.ci_manual = 300
-
     end = perf_counter()
     for i, (images, target) in enumerate(train_loader):
         # measure data loading time
@@ -373,6 +367,10 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
         if i % args.print_freq == 0:
             progress.display(i + 1)
         if args.benchmarking and len(iteration_ms) == skip_iters and mp.current_process()._identity[0] == 1:
+            tracker = CarbonTrackerManual(epochs=1, monitor_epochs=1, update_interval=1,
+                    components='all', epochs_before_pred=1, verbose=2)
+            tracker.tracker.pue_manual = 1
+            tracker.intensity_updater.ci_manual = 300
             tracker.epoch_start()
         if args.benchmarking and len(iteration_ms) > skip_iters+args.iter_limit:
             if mp.current_process()._identity[0] == 1:
