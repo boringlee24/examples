@@ -335,7 +335,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
     # switch to train mode
     model.train()
 
-    if args.benchmarking:
+    if args.benchmarking and mp.current_process()._identity[0] == 1:
         tracker = CarbonTrackerManual(epochs=1, monitor_epochs=1, update_interval=1,
                 components='all', epochs_before_pred=1, verbose=2)
         tracker.tracker.pue_manual = 1
@@ -369,16 +369,17 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
         iter_time = perf_counter() - end
         iteration_ms.append(iter_time*1000)
         batch_time.update(iter_time)
-
+        # print(f"num_iter {i}, process id {mp.current_process()._identity[0]}")
         if i % args.print_freq == 0:
             progress.display(i + 1)
-        if args.benchmarking and len(iteration_ms) == skip_iters:
+        if args.benchmarking and len(iteration_ms) == skip_iters and mp.current_process()._identity[0] == 1:
             tracker.epoch_start()
         if args.benchmarking and len(iteration_ms) > skip_iters+args.iter_limit:
-            save_dir = f'benchmark_logs/{args.num_gpu}x{args.gpu_type}'
-            tracker.epoch_end(f'{save_dir}/carbon_{args.arch}')
-            with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
-                json.dump(iteration_ms[skip_iters:], f, indent=4)
+            if mp.current_process()._identity[0] == 1:
+                save_dir = f'benchmark_logs/{args.num_gpu}x{args.gpu_type}'
+                tracker.epoch_end(f'{save_dir}/carbon_{args.arch}')
+                with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
+                    json.dump(iteration_ms[skip_iters:], f, indent=4)
             sys.exit()
         end = perf_counter()        
 
