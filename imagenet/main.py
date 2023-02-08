@@ -21,10 +21,15 @@ import torchvision.transforms as transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import Subset
 import sys
-sys.path.append('/work/li.baol/GIT/power_monitor')
+from pathlib import Path
+if Path('/workspace/power_monitor').is_dir():
+    sys.path.append('/workspace/power_monitor')
+else:
+    FILE=Path(__file__).resolve()
+    ROOT=FILE.parents[2]
+    sys.path.append(f'{str(ROOT)}/power_monitor')
 from carbontracker.tracker import CarbonTrackerManual
 from time import perf_counter
-from pathlib import Path
 import json
 
 model_names = sorted(name for name in models.__dict__
