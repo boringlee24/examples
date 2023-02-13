@@ -298,12 +298,13 @@ def main_worker(gpu, ngpus_per_node, args):
         validate(val_loader, model, criterion, args)
         return
 
+    tracker = ''
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
 
         # train for one epoch
-        train(train_loader, model, criterion, optimizer, epoch, device, args)
+        tracker = train(train_loader, model, criterion, optimizer, epoch, device, args, tracker)
 
         # evaluate on validation set
         # acc1 = validate(val_loader, model, criterion, args)
@@ -326,7 +327,7 @@ def main_worker(gpu, ngpus_per_node, args):
         #     }, is_best)
 
 
-def train(train_loader, model, criterion, optimizer, epoch, device, args):
+def train(train_loader, model, criterion, optimizer, epoch, device, args, tracker):
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
@@ -384,7 +385,8 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args):
                 with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
                     json.dump(iteration_ms[skip_iters:], f, indent=4)
             sys.exit()
-        end = perf_counter()        
+        end = perf_counter()     
+    return tracker   
 
 def validate(val_loader, model, criterion, args):
 
