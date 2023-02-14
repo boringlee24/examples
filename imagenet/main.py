@@ -384,6 +384,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args, tracke
                 tracker.epoch_end(f'{save_dir}/carbon_{args.arch}')
                 with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
                     json.dump(iteration_ms[skip_iters:], f, indent=4)
+            time.sleep(2)
             sys.exit()
         end = perf_counter()     
     return tracker   
