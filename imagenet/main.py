@@ -46,7 +46,7 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                         ' (default: resnet18)')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=10, type=int, metavar='N',
+parser.add_argument('--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -384,7 +384,8 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args, tracke
                 tracker.epoch_end(f'{save_dir}/carbon_{args.arch}')
                 with open(f'{save_dir}/time_{args.arch}.json', 'w') as f:
                     json.dump(iteration_ms[skip_iters:], f, indent=4)
-            time.sleep(2)
+            print(f'process {mp.current_process()._identity[0]} exiting')                    
+            time.sleep(2)            
             sys.exit()
         end = perf_counter()     
     return tracker   

@@ -15,10 +15,10 @@
             "env": {
                 "CUDA_VISIBLE_DEVICES": "0,1,2,3"
             },        
-            "args": ["-a", "resnet50", "-b", "64", "--multiprocessing-distributed", 
+            "args": ["-a", "vit_b_16", "-b", "256", "--multiprocessing-distributed", 
                     "--world-size", "1", "--rank", "0", 
                     "--benchmarking", 
-                    "--gpu-type", "v100", "--num-gpu", "4", "--iter-limit", "800",
+                    "--gpu-type", "a100", "--num-gpu", "4", "--iter-limit", "300",
                     "imagenet"]
         }
     ]
