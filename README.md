@@ -1,42 +1,20 @@
-# File to edit: imagenet/main.py
-Refer to https://github.com/boringlee24/containerized_distributed_training for the options passed into the python script (imagenet)
+# Pytorch Benchmarks for Deep Learning Workloads
 
-# PyTorch Examples
+This repository is a fork from the [Pytorch examples repository](https://github.com/pytorch/examples). 
 
-![Run Examples](https://github.com/pytorch/examples/workflows/Run%20Examples/badge.svg)
+The benchmark is used for our SC'23 paper ``Toward Sustainable HPC: Carbon Footprint Estimation and Environmental Implications of HPC Systems``. Please refer to https://github.com/boringlee24/sc23-sustainability for more information.
 
-https://pytorch.org/examples/
+## Dependencies
 
-`pytorch/examples` is a repository showcasing examples of using [PyTorch](https://github.com/pytorch/pytorch). The goal is to have curated, short, few/no dependencies _high quality_ examples that are substantially different from each other that can be emulated in your existing work.
+Please refer to the original [Pytorch examples](https://github.com/pytorch/examples) repository for the dependencies.
 
-- For tutorials: https://github.com/pytorch/tutorials
-- For changes to pytorch.org: https://github.com/pytorch/pytorch.github.io
-- For a general model hub: https://pytorch.org/hub/ or https://huggingface.co/models
-- For recipes on how to run PyTorch in production: https://github.com/facebookresearch/recipes
-- For general Q&A and support: https://discuss.pytorch.org/
+## Benchmark Scripts and Data
 
-## Available models
+We use the imagenet dataset to benchmark several popular computer vision models. These models can be found at ``imagenet/imagenet_benchmarks.sh``
 
-- [Image classification (MNIST) using Convnets](./mnist/README.md)
-- [Word-level Language Modeling using RNN and Transformer](./word_language_model/README.md)
-- [Training Imagenet Classifiers with Popular Networks](./imagenet/README.md)
-- [Generative Adversarial Networks (DCGAN)](./dcgan/README.md)
-- [Variational Auto-Encoders](./vae/README.md)
-- [Superresolution using an efficient sub-pixel convolutional neural network](./super_resolution/README.md)
-- [Hogwild training of shared ConvNets across multiple processes on MNIST](mnist_hogwild)
-- [Training a CartPole to balance in OpenAI Gym with actor-critic](./reinforcement_learning/README.md)
-- [Natural Language Inference (SNLI) with GloVe vectors, LSTMs, and torchtext](snli)
-- [Time sequence prediction - use an LSTM to learn Sine waves](./time_sequence_prediction/README.md)
-- [Implement the Neural Style Transfer algorithm on images](./fast_neural_style/README.md)
-- [Reinforcement Learning with Actor Critic and REINFORCE algorithms on OpenAI gym](./reinforcement_learning/README.md)
-- [PyTorch Module Transformations using fx](./fx/README.md)
-- Distributed PyTorch examples with [Distributed Data Parallel](./distributed/ddp/README.md) and [RPC](./distributed/rpc)
-- [Several examples illustrating the C++ Frontend](cpp)
+We have collected the performance and operational carbon footprint data from running these benchmarks. The data is available at ``imagenet/benchmark_logs``. For example, 4xv100 represents running over 4 V100 GPUs, ``carbon_{testcase}.json`` reports the operational carbon, while ``time_{testcase}.json`` reports the mini-batch time, representing performance.
 
-Additionally, a list of good examples hosted in their own repositories:
+## Running in Container and Cluster
 
-- [Neural Machine Translation using sequence-to-sequence RNN with attention (OpenNMT)](https://github.com/OpenNMT/OpenNMT-py)
+Refer to https://github.com/boringlee24/containerized_distributed_training for the instructions.
 
-## Contributing
-
-If you'd like to contribute your own example or fix a bug please make sure to take a look at [CONTRIBUTING.md](CONTRIBUTING.md).
