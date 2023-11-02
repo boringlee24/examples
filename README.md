@@ -8,6 +8,8 @@ The benchmark is used for our SC'23 paper ``Toward Sustainable HPC: Carbon Footp
 
 Please refer to the original [Pytorch examples](https://github.com/pytorch/examples) repository for the dependencies.
 
+To measure carbon emission, this repository uses [modified carbon tracker](https://github.com/boringlee24/power_monitor).
+
 ## Benchmark Scripts and Data
 
 We use the imagenet dataset to benchmark several popular computer vision models. These models can be found at ``imagenet/imagenet_benchmarks.sh``
